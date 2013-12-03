@@ -10,7 +10,7 @@
 
   <zk:annotation-driven curator-framework="curatorFramework" />
 
-  <zk:curator-framework id="curatorFramework" connect-string="127.0.0.1:2181">
+  <zk:curator-framework id="curatorFramework" connect-string="127.0.0.1:2181" namespace="test">
     <zk:retry-policy>
       <bean class="org.apache.curator.retry.ExponentialBackoffRetry">
         <constructor-arg index="0" type="int" value="1000" />

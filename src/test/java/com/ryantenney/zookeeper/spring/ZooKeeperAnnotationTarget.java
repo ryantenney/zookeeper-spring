@@ -7,12 +7,12 @@ import com.ryantenney.zookeeper.spring.ZooKeeper;
 
 public class ZooKeeperAnnotationTarget implements InitializingBean, DisposableBean {
 
-  @ZooKeeper("/test/field")
+  @ZooKeeper("/field")
   private String field = "initial";
 
   private String method = "initial";
 
-  @ZooKeeper("/test/method")
+  @ZooKeeper("/method")
   public void setMethod(final String method) {
     this.method = method;
     print("setter");
