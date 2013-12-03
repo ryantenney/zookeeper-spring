@@ -46,7 +46,8 @@
       </xsd:sequence>
       <xsd:attribute name="id" type="xsd:string" use="optional" />
       <xsd:attribute name="connect-string" type="xsd:string" use="optional" />
-      <xsd:attribute name="session-timeout" type="xsd:integer" use="optional" />
+      <xsd:attribute name="session-timeout" type="xsd:string" use="optional" />
+      <xsd:attribute name="namespace" type="xsd:string" use="optional" />
     </xsd:complexType>
   </xsd:element>
 

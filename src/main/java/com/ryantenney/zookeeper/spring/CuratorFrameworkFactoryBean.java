@@ -14,6 +14,7 @@ public class CuratorFrameworkFactoryBean implements FactoryBean<CuratorFramework
   private String connectString;
   private RetryPolicy retryPolicy;
   private Integer sessionTimeout;
+  private String namespace;
 
   public void afterPropertiesSet() throws Exception {
     CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
@@ -27,6 +28,10 @@ public class CuratorFrameworkFactoryBean implements FactoryBean<CuratorFramework
 
     if (sessionTimeout != null) {
       builder.sessionTimeoutMs(sessionTimeout);
+    }
+
+    if (namespace != null) {
+      builder.namespace(namespace);
     }
 
     curator = builder.build();
@@ -71,6 +76,14 @@ public class CuratorFrameworkFactoryBean implements FactoryBean<CuratorFramework
   
   public void setRetryPolicy(RetryPolicy retryPolicy) {
     this.retryPolicy = retryPolicy;
+  }
+
+  public String getNamespace() {
+    return namespace;
+  }
+
+  public void setNamespace(String namespace) {
+    this.namespace = namespace;
   }
 
 }

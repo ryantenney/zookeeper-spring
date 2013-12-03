@@ -7,6 +7,7 @@ import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import com.ryantenney.zookeeper.spring.CuratorFrameworkFactoryBean;
 
@@ -27,6 +28,11 @@ public class CuratorFrameworkBeanDefinitionParser extends AbstractBeanDefinition
       Element retryPolicyBeanElement = DomUtils.getChildElements(retryPolicyElement).get(0);
       BeanDefinitionHolder retryPolicy = parserContext.getDelegate().parseBeanDefinitionElement(retryPolicyBeanElement, beanDefBuilder.getBeanDefinition());
       beanDefBuilder.addPropertyValue("retryPolicy", retryPolicy);
+    }
+
+    Node namespace = element.getAttributeNode("namespace");
+    if (namespace != null) {
+      beanDefBuilder.addPropertyValue("namespace", namespace.getNodeValue());
     }
 
     return beanDefBuilder.getBeanDefinition();
