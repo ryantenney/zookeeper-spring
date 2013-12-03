@@ -15,6 +15,8 @@ public class ZooKeeperAnnotationTest {
     }
     catch (Throwable t) {
       t.printStackTrace();
+    }
+    finally {
       if (ctx != null) {
         ctx.stop();
         ctx.close();

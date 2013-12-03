@@ -82,13 +82,6 @@ public class ZooKeeperAnnotationBeanPostProcessor implements BeanPostProcessor, 
       }
     }, FIELD_FILTER);
 
-    return bean;
-  }
-
-  @Override
-  public Object postProcessAfterInitialization(final Object bean, String beanName) throws BeansException {
-	Class<?> targetClass = AopUtils.getTargetClass(bean);
-
     doWithMethods(targetClass, new MethodCallback() {
       @Override
       public void doWith(final Method method) throws IllegalArgumentException, IllegalAccessException {
@@ -104,6 +97,11 @@ public class ZooKeeperAnnotationBeanPostProcessor implements BeanPostProcessor, 
       }
     }, METHOD_FILTER);
     
+    return bean;
+  }
+
+  @Override
+  public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
     return bean;
   }
 
