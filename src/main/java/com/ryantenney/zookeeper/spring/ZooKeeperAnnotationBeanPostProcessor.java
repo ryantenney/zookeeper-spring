@@ -75,7 +75,7 @@ public class ZooKeeperAnnotationBeanPostProcessor implements BeanPostProcessor, 
         String path = field.getAnnotation(ZooKeeper.class).value();
         final Class<?> requiredType = field.getType();
         lookup(path, new Setter() {
-          public void setValue(Object value) throws Exception {
+          public void setValue(Object value) {
             setField(field, bean, convert(value, requiredType, null));
           }
         });
@@ -90,7 +90,7 @@ public class ZooKeeperAnnotationBeanPostProcessor implements BeanPostProcessor, 
         final MethodParameter param = MethodParameter.forMethodOrConstructor(method, 0);
         final Class<?> requiredType = param.getParameterType();
         lookup(path, new Setter() {
-          public void setValue(Object value) throws Exception {
+          public void setValue(Object value) {
             invokeMethod(method, bean, convert(value, requiredType, param));
           }
         });
@@ -105,26 +105,22 @@ public class ZooKeeperAnnotationBeanPostProcessor implements BeanPostProcessor, 
     return bean;
   }
 
-  protected void lookup(final String key, final Setter setter) {
-    Watcher watcher = new Watcher() {
+  protected void lookup(final String path, final Setter setter) {
+    lookup(path, setter, new Watcher() {
       @Override
       public void process(WatchedEvent event) {
-        // check that key and event.getPath match?
-        LOG.info("Watcher for '{}' received watched event: {}", key, event);
+        // check that path and event.getPath match?
+        LOG.info("Watcher for '{}' received watched event: {}", path, event);
         if (event.getType() == EventType.NodeDataChanged) {
-          try {
-            byte[] data = curatorFramework.getData().usingWatcher(this).forPath(event.getPath());
-            setter.setValue(new String(data, "UTF-8"));
-          }
-          catch (Exception ex) {
-            rethrowRuntimeException(ex);
-          }
+          lookup(path, setter, this);
         }
       }
-    };
+    });
+  }
 
+  protected void lookup(String path, Setter setter, Watcher watcher) {
     try {
-      byte[] data = curatorFramework.getData().usingWatcher(watcher).forPath(key);
+      byte[] data = curatorFramework.getData().usingWatcher(watcher).forPath(path);
       setter.setValue(new String(data, "UTF-8"));
     }
     catch (Exception ex) {
@@ -154,7 +150,7 @@ public class ZooKeeperAnnotationBeanPostProcessor implements BeanPostProcessor, 
   }
 
   private interface Setter {
-    void setValue(Object value) throws Exception;
+    void setValue(Object value);
   }
 
 }
