@@ -8,6 +8,8 @@ import java.lang.reflect.Method;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.KeeperException.ConnectionLossException;
+import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +125,12 @@ public class ZooKeeperAnnotationBeanPostProcessor implements BeanPostProcessor, 
     try {
       byte[] data = curatorFramework.getData().usingWatcher(watcher).forPath(path);
       setter.setValue(new String(data, "UTF-8"));
+    }
+    catch (NoNodeException ex) {
+      // TODO
+    }
+    catch (ConnectionLossException ex) {
+      // TODO
     }
     catch (Exception ex) {
       rethrowRuntimeException(ex);
