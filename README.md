@@ -23,8 +23,8 @@ Include in your application context:
   xmlns:c="http://www.springframework.org/schema/c"
   xmlns:p="http://www.springframework.org/schema/p"
   xmlns:zk="http://www.ryantenney.com/schema/zookeeper"
-  xsi:schemaLocation="http://www.ryantenney.com/schema/zookeeper http://www.ryantenney.com/schema/zookeeper/zookeeper-1.0.xsd
-                      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                      http://www.ryantenney.com/schema/zookeeper http://www.ryantenney.com/schema/zookeeper/zookeeper-1.0.xsd">
 
   <zk:annotation-driven curator-framework="curatorFramework" />
 
@@ -46,8 +46,13 @@ And annotate away:
 @Component
 public class SpringBean {
 
-    @ZooKeeper("foo")
-    private String bar;
+    @ZooKeeper("/foo")
+    private String foo;
+
+    @ZooKeeper("/bar")
+    public void setBar(String bar) {
+        // ...
+    }
 
 }
 ```
