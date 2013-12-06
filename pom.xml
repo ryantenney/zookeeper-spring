@@ -17,6 +17,7 @@
 		<spring.version>3.2.5.RELEASE</spring.version>
 		<curator.version>2.3.0</curator.version>
 		<slf4j.version>1.7.5</slf4j.version>
+		<logback.version>1.0.13</logback.version>
 		<junit.version>4.11</junit.version>
 	</properties>
 
@@ -111,6 +112,12 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 			<version>${slf4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
