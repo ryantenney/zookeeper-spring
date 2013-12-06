@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.BeanFactory;
@@ -60,7 +61,7 @@ public class ZooKeeperAnnotationBeanPostProcessor implements BeanPostProcessor, 
     }
 
     if (typeConverter == null) {
-      LOG.info("Unable to obtain a TypeConverter, will attempt to make do without one");
+      typeConverter = new SimpleTypeConverter();
     }
   }
 
