@@ -12,10 +12,18 @@ public class ZooKeeperAnnotationTarget implements InitializingBean, DisposableBe
 
   private String method = "initial";
 
+  private String nonexistent;
+
   @ZooKeeper("/method")
   public void setMethod(final String method) {
     this.method = method;
     print("setter");
+  }
+
+  @ZooKeeper("/nonexistent")
+  public void setNonexistent(final String Nonexistent) {
+    this.nonexistent = Nonexistent;
+    print("nonexistent");
   }
   
   public ZooKeeperAnnotationTarget() {
