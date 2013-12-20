@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Zookeeper-spring by ryantenney</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Zookeeper-spring</h1>
+        <h2>Annotation-driven injection of values from ZooKeeper into Spring Beans</h2>
+        <a href="https://github.com/ryantenney/zookeeper-spring" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="zookeeper-spring-" class="anchor" href="#zookeeper-spring-"><span class="octicon octicon-link"></span></a>ZooKeeper Spring <a href="http://travis-ci.org/ryantenney/zookeeper-spring"><img src="https://secure.travis-ci.org/ryantenney/zookeeper-spring.png" alt="Build Status"></a>
+</h1>
+
+<p>Annotation-driven injection of values from ZooKeeper into Spring Beans</p>
+
+<h3>
+<a name="maven" class="anchor" href="#maven"><span class="octicon octicon-link"></span></a>Maven</h3>
+
+<div class="highlight highlight-xml"><pre><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.ryantenney.zookeeper<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>zookeeper-spring<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+
+<h3>
+<a name="basic-usage" class="anchor" href="#basic-usage"><span class="octicon octicon-link"></span></a>Basic Usage</h3>
+
+<p>Include in your application context:</p>
+
+<div class="highlight highlight-xml"><pre><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
+  <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+  <span class="na">xmlns:c=</span><span class="s">"http://www.springframework.org/schema/c"</span>
+  <span class="na">xmlns:p=</span><span class="s">"http://www.springframework.org/schema/p"</span>
+  <span class="na">xmlns:zk=</span><span class="s">"http://www.ryantenney.com/schema/zookeeper"</span>
+  <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd</span>
+<span class="s">                      http://www.ryantenney.com/schema/zookeeper http://www.ryantenney.com/schema/zookeeper/zookeeper-1.0.xsd"</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;zk:annotation-driven</span> <span class="na">curator-framework=</span><span class="s">"curatorFramework"</span> <span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;zk:curator-framework</span> <span class="na">id=</span><span class="s">"curatorFramework"</span> <span class="na">connect-string=</span><span class="s">"127.0.0.1:2181"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;zk:retry-policy&gt;</span>
+      <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">"org.apache.curator.retry.ExponentialBackoffRetry"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">"0"</span> <span class="na">type=</span><span class="s">"int"</span> <span class="na">value=</span><span class="s">"1000"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">"1"</span> <span class="na">type=</span><span class="s">"int"</span> <span class="na">value=</span><span class="s">"3"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/bean&gt;</span>
+    <span class="nt">&lt;/zk:retry-policy&gt;</span>
+  <span class="nt">&lt;/zk:curator-framework&gt;</span>
+
+<span class="nt">&lt;/beans&gt;</span>
+</pre></div>
+
+<p>And annotate away:</p>
+
+<div class="highlight highlight-java"><pre><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SpringBean</span> <span class="o">{</span>
+
+    <span class="nd">@ZooKeeper</span><span class="o">(</span><span class="s">"/foo"</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">foo</span><span class="o">;</span>
+
+    <span class="nd">@ZooKeeper</span><span class="o">(</span><span class="s">"/bar"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setBar</span><span class="o">(</span><span class="n">String</span> <span class="n">bar</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// ...</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+
+<hr><h3>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h3>
+
+<p>Copyright (c) 2013 Ryan Tenney</p>
+
+<p>Published under Apache Software License 2.0, see LICENSE</p>
+
+<p><a href="http://rochestermade.com"><img src="http://rochestermade.com/media/images/rochester-made-dark-on-light.png" alt="Rochester Made"></a></p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/ryantenney/zookeeper-spring/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/ryantenney/zookeeper-spring/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/ryantenney/zookeeper-spring"></a> is maintained by <a href="https://github.com/ryantenney">ryantenney</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
