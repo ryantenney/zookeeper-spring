@@ -18,5 +18,6 @@
   <logger name="com.ryantenney" level="TRACE" />
   <logger name="org.apache.curator" level="INFO" />
   <logger name="org.apache.zookeeper" level="INFO" />
+  <logger name="org.apache.zookeeper.server" level="ERROR" />
 
 </configuration>

@@ -7,25 +7,42 @@ import com.ryantenney.zookeeper.spring.ZooKeeper;
 
 public class ZooKeeperAnnotationTarget implements InitializingBean, DisposableBean {
 
-  @ZooKeeper("/field")
-  private String field = "initial";
+	public static final String FIELD_PATH = "/field";
+	public static final String METHOD_PATH = "/method";
+	public static final String NONEXISTENT_PATH = "/nonexistent";
 
-  private String method = "initial";
-
+  private @ZooKeeper(FIELD_PATH) String field;
+  private String method;
   private String nonexistent;
 
-  @ZooKeeper("/method")
+	public String getField() {
+		return field;
+	}
+
+	public void setField(String field) {
+		this.field = field;
+	}
+
+	public String getMethod() {
+		return method;
+	}
+
+  @ZooKeeper(METHOD_PATH)
   public void setMethod(final String method) {
     this.method = method;
     print("setter");
   }
 
-  @ZooKeeper("/nonexistent")
-  public void setNonexistent(final String Nonexistent) {
-    this.nonexistent = Nonexistent;
+	public String getNonexistent() {
+		return nonexistent;
+	}
+
+  @ZooKeeper(NONEXISTENT_PATH)
+  public void setNonexistent(final String nonexistent) {
+    this.nonexistent = nonexistent;
     print("nonexistent");
   }
-  
+
   public ZooKeeperAnnotationTarget() {
     print("ctor");
   }
@@ -34,14 +51,14 @@ public class ZooKeeperAnnotationTarget implements InitializingBean, DisposableBe
   public void afterPropertiesSet() throws Exception {
     print("init");
   }
-  
+
   @Override
   public void destroy() throws Exception {
     print("destroy");
   }
-  
-  private void print(String phase) {
-    System.out.printf("phase '%s': field=%s, method=%s\n", phase, field, method);
+
+  public void print(String phase) {
+    System.out.printf("phase '%s': field=%s, method=%s, nonexistent=%s\n", phase, field, method, nonexistent);
   }
 
 }

@@ -2,10 +2,12 @@ package com.ryantenney.zookeeper.spring;
 
 import static org.springframework.util.ReflectionUtils.*;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.api.GetDataBuilder;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.KeeperException.ConnectionLossException;
@@ -77,9 +79,9 @@ public class ZooKeeperAnnotationBeanPostProcessor implements BeanPostProcessor, 
         makeAccessible(field);
         String path = field.getAnnotation(ZooKeeper.class).value();
         final Class<?> requiredType = field.getType();
-        lookup(path, new Setter() {
+        lookup(path, new Setter(bean) {
           public void setValue(Object value) {
-            setField(field, bean, convert(value, requiredType, null));
+            setField(field, getTarget(), convert(value, requiredType, null));
           }
         });
       }
@@ -92,9 +94,9 @@ public class ZooKeeperAnnotationBeanPostProcessor implements BeanPostProcessor, 
         String path = method.getAnnotation(ZooKeeper.class).value();
         final MethodParameter param = MethodParameter.forMethodOrConstructor(method, 0);
         final Class<?> requiredType = param.getParameterType();
-        lookup(path, new Setter() {
+        lookup(path, new Setter(bean) {
           public void setValue(Object value) {
-            invokeMethod(method, bean, convert(value, requiredType, param));
+            invokeMethod(method, getTarget(), convert(value, requiredType, param));
           }
         });
       }
@@ -123,7 +125,11 @@ public class ZooKeeperAnnotationBeanPostProcessor implements BeanPostProcessor, 
 
   protected void lookup(String path, Setter setter, Watcher watcher) {
     try {
-      byte[] data = curatorFramework.getData().usingWatcher(watcher).forPath(path);
+      GetDataBuilder getDataBuilder = curatorFramework.getData();
+      if (setter.isValid()) {
+        getDataBuilder.usingWatcher(watcher);
+      }
+      byte[] data = getDataBuilder.forPath(path);
       setter.setValue(new String(data, "UTF-8"));
     }
     catch (NoNodeException ex) {
@@ -158,8 +164,24 @@ public class ZooKeeperAnnotationBeanPostProcessor implements BeanPostProcessor, 
     this.order = order;
   }
 
-  private interface Setter {
-    void setValue(Object value);
+  private static abstract class Setter {
+
+    protected final WeakReference<Object> target;
+
+    public Setter(final Object target) {
+      this.target = new WeakReference<Object>(target);
+    }
+
+    public boolean isValid() {
+      return this.target.get() != null;
+    }
+
+    public Object getTarget() {
+      return target.get();
+    }
+    
+    public abstract void setValue(Object value);
+
   }
 
 }
